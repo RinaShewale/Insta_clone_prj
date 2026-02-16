@@ -83,22 +83,7 @@ async function getuserpost(req, res) {
 
 
 async function getUserPostDetails(req, res) {
-    const token = req.cookies.token
-    if (!token) {
-        return res.status(401).json({
-            message: "unauthorized user"
-        })
-    }
-
-    let decoded
-    try {
-        decoded = jwt.verify(token, process.env.JWT_TOKEN)
-    }
-    catch (err) {
-        return res.status(401).json({
-            message: "invalid token"
-        })
-    }
+  
 
     const userid = decoded.id
 
