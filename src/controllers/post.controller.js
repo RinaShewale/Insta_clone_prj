@@ -4,30 +4,12 @@ const ImageKit = require("@imagekit/nodejs")
 const { toFile } = require("@imagekit/nodejs")
 const jwt = require("jsonwebtoken")
 
+
 const imagekit = new ImageKit({
     privateKey: process.env.ImageKit_Private_key
 })
 
 async function createpostcontroller(req, res) {
-
-    const token = req.cookies.token
-
-    if (!token) {
-        return res.status(401).json({
-            message: "token not provided unauthorized access "
-        })
-    }
-
-    let decoded = null
-
-    try {
-        decoded = jwt.verify(token, process.env.JWT_TOKEN)
-    }
-    catch (err) {
-        return res.status(401).json({
-            message: " user not authrized"
-        })
-    }
 
 
     const file = await imagekit.files.upload({
@@ -40,7 +22,7 @@ async function createpostcontroller(req, res) {
     const post = await postmodel.create({
         caption: req.body.caption,
         imgURI: file.url,
-        user: decoded.id
+        user: req.user.id
     })
     res.status(201).json({
         message: "post created successfully", post
@@ -49,29 +31,8 @@ async function createpostcontroller(req, res) {
 
 
 async function getuserpost(req, res) {
-    const userid = req.params.userid
 
-    const token = req.cookies.token
-
-    if (!token) {
-        return res.status(401).json({
-            message: "unauthorized user "
-        })
-    }
-
-    let decoded = null
-
-    try {
-        decoded = jwt.verify(token, process.env.JWT_TOKEN)
-
-    }
-    catch (err) {
-        return res.status(401).json({
-            message: "user not authrized"
-        })
-    }
-
-    const userId = decoded.id
+    const userId = req.user.id
     const post = await postmodel.find({ user: userId })
     res.status(200).json({
         message: "user post featched", post
@@ -81,11 +42,10 @@ async function getuserpost(req, res) {
 }
 
 
-
 async function getUserPostDetails(req, res) {
   
 
-    const userid = decoded.id
+    const userid = req.user.id
 
     const postId = req.params.postid
 
@@ -110,13 +70,6 @@ async function getUserPostDetails(req, res) {
     })
 
 }
-
-
-
-
-
-
-
 
 
 module.exports = {
