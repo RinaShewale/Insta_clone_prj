@@ -30,7 +30,7 @@ async function registercontroller(req, res) {
     })
 
     const token = jwt.sign({
-        id: user._id,username:user.username
+        id: user._id, username: user.username
     }, process.env.JWT_TOKEN, { expiresIn: "1d" })
 
     res.cookie("token", token)
@@ -79,7 +79,7 @@ async function logincontroller(req, res) {
     }
 
     const token = jwt.sign({
-        id: user._id,username:user.username
+        id: user._id, username: user.username
     }, process.env.JWT_TOKEN, { expiresIn: "1d" })
     res.cookie("token", token)
 
@@ -96,7 +96,21 @@ async function logincontroller(req, res) {
 }
 
 
+async function getmecontroller(req, res) {
+    const userId = req.userId
+    const user = await usermodel.findById(userId)
+
+    res.status(200).json({
+        email: user.email,
+        username: user.username,
+        bio: user.bio,
+        profile_img: user.profile_img
+    })
+}
+
+
 module.exports = {
     registercontroller,
-    logincontroller
+    logincontroller,
+    getmecontroller
 }
